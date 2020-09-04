@@ -1,0 +1,95 @@
+{% extends 'base.html'%}
+{%load static%}
+ {%block content%}
+
+{% load crispy_forms_tags %}
+
+<div class="border p-3 m-4 ">
+
+  <div class="row m-1">
+  <div class="column"> <img class="img-fluid rounded-circle border m-2" style="  width: 70px;  height: 70px;" src="{{post.author.profile.image.url}}" alt="صورة الناشر"></div>
+  <div class="column mt-4">
+      <span class="">{{post.author}}</span>
+        {%if post.author.is_superuser%}
+     <img class=" mr-2" width="15px" src="{% static 'images/102649.png' %}">
+        {%endif%}
+<div><span class="text-secondary ">نشر في</span>
+    <span class="text-secondary">{{post.post_date|date:'d m Y '}} </span>
+</div></div>
+           {% if post.author == user %}
+    <div class="form-group btn-editing mt-4 pt-1 mr-5 pr-5">
+        <a class="btn btn-secondary ml-2" href="{% url 'post_update' post.id %}"> تحرير</a>
+         <a class="btn btn-danger " href="{% url 'post_delete' post.id %}"> حذف</a>
+    </div>  
+    {% endif %}
+    
+</div>
+   <h3><code class="comment_body text-dark" >{{post.title}}</code></h3>
+    <p><code class="comment_body text-dark" style="white-space: pre-line;" >{{post.content}}</code></p>
+ {%if post.stuff != None and post.stuff != "" %}
+ <h3 class="btn btn-secondary mt-2">الملحقات : </h3>
+        <a href= {{post.stuff}} class="text-dark">       
+       {% if post.stuff|length > 40%}
+      ....
+        {{post.stuff|slice:'30'}}
+        {% else %}
+        {{post.stuff}}
+        {% endif %}   
+        </a>
+{%endif%}
+
+
+{% if post.get_photo_url  != None%}
+
+<img  class="img-fluid" src="{{post.get_photo_url }}" alt="صورة ">
+ {% endif %}
+
+</div>
+
+
+    <h2 class="border-bottom mt-5 mb-3"> التعليقات ({{comments.count}})</h2>
+   {% for comment in comments %}
+
+<ul class="p-3 comment">
+    <div class="container">
+        <div class="row">
+            <div class="col "><h6 class="border-bottom p-2">( {{comment.name}} ) <span
+                class="text-secondary">{{comment.comment_date|date:'d-m-Y'}}</span></h6></div>
+                {% if user == comment.user %}
+                <div class="col-*-*"> <a class="btn btn-danger" href="{% url 'delete_comment' comment.id comment.post.id %}" >حذف التعليق</a></div>
+                {%else%}
+                {% endif %}
+              
+            </div>
+         
+   
+    
+         
+   
+    <code class="comment_body text-dark" >{{ comment.body}}</code>
+     
+
+
+</ul>
+
+
+ 
+{% empty %}
+<h6 class="text-center p-4 mb-3 comment">لا يوجد تعليقات</h6>
+{% endfor %}
+
+{% if user.is_authenticated %}
+<h3 class="border-bottom pb-3 mb-3 mt-5">إضافة تعلق جديد</h3>
+
+    <div class="border p-4 mb-5 mt-4">
+        <form method="POST">
+        {% csrf_token %}
+        {{comment_form|crispy}}
+        <input class="btn btn-secondary" type="submit" value="نشر التعليق">
+    </form>
+    </div>
+    {%else%}
+    <h3 class="border-bottom border-top pb-3 mb-3 mt-5">قم بإنشاء حساب حتى يمكنك نشر التعليق الخاص بك.</h3>
+       
+{%endif%}
+  {%endblock%}

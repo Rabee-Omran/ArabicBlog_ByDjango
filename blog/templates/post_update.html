@@ -1,0 +1,20 @@
+{% extends 'base.html'%}
+
+ {%block content%}
+
+{% load crispy_forms_tags %}
+
+
+
+
+    <legend class="border-bottom pb-1 mb-3 "> تحرير التدوينة</legend>
+    <div class="border p-4 mb-5 mt-4">
+        <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input class="btn btn-secondary mt-4" type="submit" value="تحديث">
+        </form>
+    </div>
+
+
+     {%endblock%}
